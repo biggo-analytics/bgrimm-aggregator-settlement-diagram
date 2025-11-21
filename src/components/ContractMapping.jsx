@@ -1,7 +1,5 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ReactFlow, {
-  addEdge,
-  MiniMap,
   Controls,
   Background,
   useNodesState,
@@ -10,7 +8,6 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
-import ConfigPanel from './ConfigPanel';
 
 const nodeTypes = {
   generation: (props) => <CustomNode {...props} type="generation" />,
@@ -21,173 +18,243 @@ const nodeTypes = {
 const edgeColors = ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
 
 const ContractMapping = () => {
-  // Configuration state
-  const [numGenerations, setNumGenerations] = useState(3);
-  const [numLoads, setNumLoads] = useState(2);
-  const [generations, setGenerations] = useState([
-    { id: 'gen-1', label: 'Gen D1', value: '3,000 kW' },
-    { id: 'gen-2', label: 'Gen D2', value: '2,800 kW' },
-    { id: 'gen-3', label: 'Gen D3', value: '2,500 kW' },
-  ]);
-  const [loads, setLoads] = useState([
-    { id: 'load-1', label: 'Load D1', value: '4,200 kW' },
-    { id: 'load-2', label: 'Load D2', value: '3,800 kW' },
-  ]);
-
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // Generate nodes based on configuration
+  // Initialize nodes and edges
   useEffect(() => {
+    // Define generations
+    const generations = [
+      { id: 'gen-1', label: 'Gen D1', value: '3,000 kW' },
+      { id: 'gen-2', label: 'Gen D2', value: '2,800 kW' },
+      { id: 'gen-3', label: 'Gen D3', value: '2,500 kW' },
+    ];
+
+    // Define loads
+    const loads = [
+      { id: 'load-1', label: 'Load D1', value: '4,200 kW (60% allocation)' },
+      { id: 'load-2', label: 'Load D2', value: '3,800 kW (40% allocation)' },
+    ];
+
+    // Create generation nodes
     const generationNodes = generations.map((gen, index) => ({
       id: gen.id,
       type: 'generation',
-      position: { x: 50, y: 100 + index * 150 },
+      position: { x: 100, y: 150 + index * 180 },
       data: { label: gen.label, value: gen.value },
       draggable: false,
     }));
 
+    // Create load nodes
     const loadNodes = loads.map((load, index) => ({
       id: load.id,
       type: 'load',
-      position: { x: 800, y: 100 + index * 150 },
+      position: { x: 900, y: 200 + index * 200 },
       data: { label: load.label, value: load.value },
       draggable: false,
     }));
 
     setNodes([...generationNodes, ...loadNodes]);
-  }, [generations, loads, setNodes]);
 
-  // Handle connection
-  const onConnect = useCallback(
-    (params) => {
-      const colorIndex = edges.length % edgeColors.length;
-      const newEdge = {
-        ...params,
-        id: `edge-${edges.length + 1}`,
-        type: 'smoothstep',
+    // Create sample connections
+    const sampleEdges = [
+      {
+        id: 'edge-1',
+        source: 'gen-1',
+        target: 'load-1',
+        type: 'default',
         animated: false,
-        style: { stroke: edgeColors[colorIndex], strokeWidth: 2 },
+        style: { stroke: edgeColors[0], strokeWidth: 3 },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: edgeColors[colorIndex],
+          color: edgeColors[0],
+          width: 20,
+          height: 20,
         },
         label: '50%',
         labelStyle: {
-          fill: edgeColors[colorIndex],
-          fontWeight: 600,
-          fontSize: 12,
+          fill: edgeColors[0],
+          fontWeight: 700,
+          fontSize: 14,
         },
         labelBgStyle: {
           fill: 'white',
-          fillOpacity: 0.9,
+          fillOpacity: 1,
+          rx: 10,
         },
-        labelBgPadding: [8, 4],
-        labelBgBorderRadius: 50,
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
-    },
-    [edges.length, setEdges]
-  );
+        labelBgPadding: [10, 6],
+        labelBgBorderRadius: 20,
+      },
+      {
+        id: 'edge-2',
+        source: 'gen-2',
+        target: 'load-1',
+        type: 'default',
+        animated: false,
+        style: { stroke: edgeColors[1], strokeWidth: 3 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edgeColors[1],
+          width: 20,
+          height: 20,
+        },
+        label: '30%',
+        labelStyle: {
+          fill: edgeColors[1],
+          fontWeight: 700,
+          fontSize: 14,
+        },
+        labelBgStyle: {
+          fill: 'white',
+          fillOpacity: 1,
+          rx: 10,
+        },
+        labelBgPadding: [10, 6],
+        labelBgBorderRadius: 20,
+      },
+      {
+        id: 'edge-3',
+        source: 'gen-3',
+        target: 'load-1',
+        type: 'default',
+        animated: false,
+        style: { stroke: edgeColors[2], strokeWidth: 3 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edgeColors[2],
+          width: 20,
+          height: 20,
+        },
+        label: '20%',
+        labelStyle: {
+          fill: edgeColors[2],
+          fontWeight: 700,
+          fontSize: 14,
+        },
+        labelBgStyle: {
+          fill: 'white',
+          fillOpacity: 1,
+          rx: 10,
+        },
+        labelBgPadding: [10, 6],
+        labelBgBorderRadius: 20,
+      },
+      {
+        id: 'edge-4',
+        source: 'gen-2',
+        target: 'load-2',
+        type: 'default',
+        animated: false,
+        style: { stroke: edgeColors[3], strokeWidth: 3 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edgeColors[3],
+          width: 20,
+          height: 20,
+        },
+        label: '60%',
+        labelStyle: {
+          fill: edgeColors[3],
+          fontWeight: 700,
+          fontSize: 14,
+        },
+        labelBgStyle: {
+          fill: 'white',
+          fillOpacity: 1,
+          rx: 10,
+        },
+        labelBgPadding: [10, 6],
+        labelBgBorderRadius: 20,
+      },
+      {
+        id: 'edge-5',
+        source: 'gen-3',
+        target: 'load-2',
+        type: 'default',
+        animated: false,
+        style: { stroke: edgeColors[4], strokeWidth: 3 },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: edgeColors[4],
+          width: 20,
+          height: 20,
+        },
+        label: '40%',
+        labelStyle: {
+          fill: edgeColors[4],
+          fontWeight: 700,
+          fontSize: 14,
+        },
+        labelBgStyle: {
+          fill: 'white',
+          fillOpacity: 1,
+          rx: 10,
+        },
+        labelBgPadding: [10, 6],
+        labelBgBorderRadius: 20,
+      },
+    ];
 
-  // Update number of generations
-  const handleGenerationsCountChange = (count) => {
-    setNumGenerations(count);
-    const newGenerations = [];
-    for (let i = 0; i < count; i++) {
-      if (i < generations.length) {
-        newGenerations.push(generations[i]);
-      } else {
-        newGenerations.push({
-          id: `gen-${i + 1}`,
-          label: `Gen ${String.fromCharCode(65 + i)}`,
-          value: `${3000 - i * 200} kW`,
-        });
-      }
-    }
-    setGenerations(newGenerations);
-  };
-
-  // Update number of loads
-  const handleLoadsCountChange = (count) => {
-    setNumLoads(count);
-    const newLoads = [];
-    for (let i = 0; i < count; i++) {
-      if (i < loads.length) {
-        newLoads.push(loads[i]);
-      } else {
-        newLoads.push({
-          id: `load-${i + 1}`,
-          label: `Load ${String.fromCharCode(65 + i)}`,
-          value: `${4000 - i * 200} kW`,
-        });
-      }
-    }
-    setLoads(newLoads);
-  };
-
-  // Update generation data
-  const handleGenerationUpdate = (index, field, value) => {
-    const updated = [...generations];
-    updated[index][field] = value;
-    setGenerations(updated);
-  };
-
-  // Update load data
-  const handleLoadUpdate = (index, field, value) => {
-    const updated = [...loads];
-    updated[index][field] = value;
-    setLoads(updated);
-  };
-
-  // Update edge label (percentage)
-  const handleEdgeLabelUpdate = (edgeId, newLabel) => {
-    setEdges((eds) =>
-      eds.map((edge) =>
-        edge.id === edgeId ? { ...edge, label: newLabel } : edge
-      )
-    );
-  };
+    setEdges(sampleEdges);
+  }, [setNodes, setEdges]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Configuration Panel */}
-      <ConfigPanel
-        numGenerations={numGenerations}
-        numLoads={numLoads}
-        generations={generations}
-        loads={loads}
-        edges={edges}
-        onGenerationsCountChange={handleGenerationsCountChange}
-        onLoadsCountChange={handleLoadsCountChange}
-        onGenerationUpdate={handleGenerationUpdate}
-        onLoadUpdate={handleLoadUpdate}
-        onEdgeLabelUpdate={handleEdgeLabelUpdate}
-      />
+    <div className="w-screen h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200 px-8 py-4 shadow-sm">
+        <h1 className="text-2xl font-bold text-gray-800">Contract Mapping</h1>
+        <p className="text-sm text-gray-600 mt-1">Energy Distribution Diagram</p>
+      </div>
 
       {/* React Flow Canvas */}
-      <div className="flex-1 relative">
+      <div className="w-full h-full pt-20">
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
           nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-right"
-          className="bg-white"
+          className="bg-transparent"
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={true}
+          panOnDrag={true}
+          zoomOnScroll={true}
+          minZoom={0.5}
+          maxZoom={2}
         >
-          <Background color="#e5e7eb" gap={16} />
-          <Controls />
-          <MiniMap
-            nodeColor={(node) => {
-              if (node.type === 'generation') return '#bfdbfe';
-              return '#bae6fd';
-            }}
-            className="bg-gray-100"
-          />
+          <Background color="#d1d5db" gap={20} size={1} />
+          <Controls className="bg-white border border-gray-300 rounded-lg shadow-md" />
         </ReactFlow>
+      </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-8 left-8 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 p-4">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Connections</h3>
+        <div className="space-y-2 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[0] }}></div>
+            <span className="text-gray-600">Gen D1 → Load D1 (50%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[1] }}></div>
+            <span className="text-gray-600">Gen D2 → Load D1 (30%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[2] }}></div>
+            <span className="text-gray-600">Gen D3 → Load D1 (20%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[3] }}></div>
+            <span className="text-gray-600">Gen D2 → Load D2 (60%)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[4] }}></div>
+            <span className="text-gray-600">Gen D3 → Load D2 (40%)</span>
+          </div>
+        </div>
       </div>
     </div>
   );
