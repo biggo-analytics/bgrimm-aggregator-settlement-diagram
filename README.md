@@ -2,15 +2,18 @@
 
 A React application built with React Flow and Tailwind CSS to visualize energy distribution contracts between generation sources and loads.
 
+> 🇹🇭 **สำหรับเอกสารภาษาไทยแบบละเอียด**: อ่านที่ [DOCUMENTATION.md](./DOCUMENTATION.md)
+
 ## Features
 
 - **Interactive Flow Diagram**: Visual representation of energy distribution from generations to loads
 - **Custom Node Design**: Professional card-style nodes with light blue styling
-- **Dynamic Configuration**: Real-time adjustment of generations and loads
-- **Connection Management**: Draw connections with smooth bezier curves
+- **Pre-configured Connections**: Sample connections with smooth bezier curves
 - **Percentage Labels**: Display allocation percentages on each connection
-- **Color-Coded Connections**: Automatically assigned colors for different connections
-- **Configuration Panel**: Sidebar interface to manage all diagram elements
+- **Color-Coded Connections**: 5 distinct colors for different connections
+- **Connection Legend**: Visual legend showing all connections and their percentages
+- **Pan & Zoom**: Interactive canvas with zoom and pan controls
+- **Clean UI**: No configuration panel - pure diagram visualization
 
 ## Tech Stack
 
@@ -51,21 +54,23 @@ npm preview
 
 ## How to Use
 
-1. **Adjust Node Counts**: Use the configuration panel to set the number of generations and loads
-2. **Edit Node Data**: Click on the expandable sections to edit labels and values for each node
-3. **Create Connections**: Drag from a generation node handle (right side) to a load node handle (left side)
-4. **Update Percentages**: Modify connection percentages in the "Connections" section of the config panel
-5. **Zoom & Pan**: Use mouse wheel to zoom and drag to pan the canvas
-6. **Reset View**: Use the controls in the bottom-left to reset the view
+1. **View the Diagram**: Open the application to see the pre-configured energy distribution diagram
+2. **Zoom & Pan**: Use mouse wheel to zoom and drag to pan the canvas
+3. **Read Information**:
+   - Node cards show generation/load names and capacity (kW)
+   - Edge labels show allocation percentages
+   - Legend at bottom-left shows all connections
+4. **Reset View**: Use the controls to reset the view to fit all nodes
+5. **Customize**: Edit `src/components/ContractMapping.jsx` to change nodes and connections
 
 ## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── ContractMapping.jsx  # Main component with React Flow logic
+│   ├── ContractMapping.jsx  # Main component with React Flow logic and sample data
 │   ├── CustomNode.jsx        # Custom node component for generations/loads
-│   └── ConfigPanel.jsx       # Configuration sidebar panel
+│   └── ConfigPanel.jsx       # (Not used in this version)
 ├── App.jsx                   # Root app component
 ├── main.jsx                  # Application entry point
 └── index.css                 # Global styles with Tailwind directives
@@ -81,18 +86,22 @@ src/
 - Non-draggable but auto-positioned
 
 ### Connections
-- Smooth bezier curves
-- Color-coded (5 color palette cycles automatically)
-- Percentage labels in circular badges
+- Smooth bezier curves (default type)
+- Color-coded (5 color palette: blue, cyan, emerald, amber, red)
+- Percentage labels with white background badges
 - Arrow markers at the destination
-- Editable labels through config panel
+- Pre-configured sample connections:
+  - Gen D1 → Load D1 (50%)
+  - Gen D2 → Load D1 (30%), Load D2 (60%)
+  - Gen D3 → Load D1 (20%), Load D2 (40%)
 
-### Configuration Panel
-- Number inputs for generation and load counts
-- Expandable sections for detailed editing
-- Live updates to the diagram
-- Connection management interface
-- Usage instructions
+### UI Components
+- Header with title and subtitle
+- Interactive canvas with pan and zoom
+- Background grid pattern
+- Control panel for zoom/pan/fit view
+- Connection legend at bottom-left corner
+- Gradient background for modern look
 
 ## Customization
 
