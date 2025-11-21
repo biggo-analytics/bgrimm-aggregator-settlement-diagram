@@ -72,6 +72,7 @@ const ContractMapping = () => {
           height: 20,
         },
         label: '50%',
+        labelPosition: 0.5,
         labelStyle: {
           fill: edgeColors[0],
           fontWeight: 700,
@@ -84,6 +85,7 @@ const ContractMapping = () => {
         },
         labelBgPadding: [10, 6],
         labelBgBorderRadius: 20,
+        interactionWidth: 30,
       },
       {
         id: 'edge-2',
@@ -99,6 +101,7 @@ const ContractMapping = () => {
           height: 20,
         },
         label: '30%',
+        labelPosition: 0.35,
         labelStyle: {
           fill: edgeColors[1],
           fontWeight: 700,
@@ -111,6 +114,7 @@ const ContractMapping = () => {
         },
         labelBgPadding: [10, 6],
         labelBgBorderRadius: 20,
+        interactionWidth: 30,
       },
       {
         id: 'edge-3',
@@ -126,6 +130,7 @@ const ContractMapping = () => {
           height: 20,
         },
         label: '20%',
+        labelPosition: 0.65,
         labelStyle: {
           fill: edgeColors[2],
           fontWeight: 700,
@@ -138,6 +143,7 @@ const ContractMapping = () => {
         },
         labelBgPadding: [10, 6],
         labelBgBorderRadius: 20,
+        interactionWidth: 30,
       },
       {
         id: 'edge-4',
@@ -153,6 +159,7 @@ const ContractMapping = () => {
           height: 20,
         },
         label: '60%',
+        labelPosition: 0.6,
         labelStyle: {
           fill: edgeColors[3],
           fontWeight: 700,
@@ -165,6 +172,7 @@ const ContractMapping = () => {
         },
         labelBgPadding: [10, 6],
         labelBgBorderRadius: 20,
+        interactionWidth: 30,
       },
       {
         id: 'edge-5',
@@ -180,6 +188,7 @@ const ContractMapping = () => {
           height: 20,
         },
         label: '40%',
+        labelPosition: 0.4,
         labelStyle: {
           fill: edgeColors[4],
           fontWeight: 700,
@@ -192,6 +201,7 @@ const ContractMapping = () => {
         },
         labelBgPadding: [10, 6],
         labelBgBorderRadius: 20,
+        interactionWidth: 30,
       },
     ];
 
