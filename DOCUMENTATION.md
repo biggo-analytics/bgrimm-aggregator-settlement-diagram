@@ -9,8 +9,11 @@
 3. [เทคโนโลยีที่ใช้](#เทคโนโลยีที่ใช้)
 4. [การติดตั้ง](#การติดตั้ง)
 5. [อธิบาย Code แต่ละส่วน](#อธิบาย-code-แต่ละส่วน)
-6. [การปรับแต่ง](#การปรับแต่ง)
-7. [วิธีการใช้งาน](#วิธีการใช้งาน)
+6. [คู่มือการเพิ่ม/ลด Nodes](#คู่มือการเพิ่มลด-nodes)
+7. [คู่มือการเพิ่ม/ลด Connections](#คู่มือการเพิ่มลด-connections)
+8. [การปรับแต่งขั้นสูง](#การปรับแต่งขั้นสูง)
+9. [วิธีการใช้งาน](#วิธีการใช้งาน)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -391,6 +394,7 @@ const sampleEdges = [
       height: 20,
     },
     label: '50%',
+    labelPosition: 0.5,
     labelStyle: {
       fill: edgeColors[0],
       fontWeight: 700,
@@ -403,6 +407,7 @@ const sampleEdges = [
     },
     labelBgPadding: [10, 6],
     labelBgBorderRadius: 20,
+    interactionWidth: 30,
   },
   // ... edges อื่นๆ
 ];
@@ -410,34 +415,45 @@ const sampleEdges = [
 
 **อธิบายแต่ละ property:**
 
-- `id`: unique identifier ของ edge
+**Basic Properties:**
+- `id`: unique identifier ของ edge (ต้องไม่ซ้ำกัน)
 - `source`: id ของ node ต้นทาง (generation)
 - `target`: id ของ node ปลายทาง (load)
-- `type: 'default'`: ใช้ edge type แบบ default (เส้นโค้ง bezier)
-- `animated: false`: ไม่ให้เส้นเคลื่อนไหว
+- `type: 'default'`: ใช้ edge type แบบ default (เส้นโค้ง bezier smooth)
+- `animated: false`: ไม่ให้เส้นเคลื่อนไหว (ถ้าเป็น true จะมี animation ไหลไปตาม edge)
 
 **Style Properties:**
-- `style.stroke`: สีของเส้น
-- `style.strokeWidth`: ความหนาของเส้น (3 pixels)
+- `style.stroke`: สีของเส้น (ใช้สีจาก edgeColors array)
+- `style.strokeWidth: 3`: ความหนาของเส้น (3 pixels)
 
 **Marker (ลูกศร):**
 - `markerEnd`: กำหนดลูกศรที่ปลายทาง
-- `MarkerType.ArrowClosed`: ลูกศรแบบปิด
-- `color`: สีของลูกศร (ตามสีเส้น)
-- `width`, `height`: ขนาดของลูกศร (20x20 pixels)
+- `MarkerType.ArrowClosed`: ลูกศรแบบปิด (มีหลายแบบ: Arrow, ArrowClosed)
+- `color`: สีของลูกศร (ควรตรงกับสีเส้น)
+- `width: 20`, `height: 20`: ขนาดของลูกศร (20x20 pixels)
 
 **Label (ป้ายเปอร์เซ็นต์):**
-- `label: '50%'`: ข้อความที่แสดง
-- `labelStyle.fill`: สีของข้อความ
-- `labelStyle.fontWeight: 700`: ตัวหนา
+- `label: '50%'`: ข้อความที่แสดง (สามารถใส่ text อะไรก็ได้)
+- `labelPosition: 0.5`: ตำแหน่งของ label บนเส้น
+  - `0` = ที่จุดเริ่มต้น (source)
+  - `0.5` = ตรงกลางเส้น
+  - `1` = ที่จุดสิ้นสุด (target)
+  - **สำคัญ**: ใช้ labelPosition เพื่อป้องกันการทับกันของ labels
+- `labelStyle.fill`: สีของข้อความ (ตรงกับสีเส้น)
+- `labelStyle.fontWeight: 700`: ตัวหนา (700 = bold)
 - `labelStyle.fontSize: 14`: ขนาดตัวอักษร 14px
 
 **Label Background:**
 - `labelBgStyle.fill: 'white'`: พื้นหลังสีขาว
 - `labelBgStyle.fillOpacity: 1`: ความทึบแสง 100%
 - `labelBgStyle.rx: 10`: มุมโค้งมน
-- `labelBgPadding: [10, 6]`: padding รอบๆ ข้อความ (horizontal 10, vertical 6)
+- `labelBgPadding: [10, 6]`: padding รอบๆ ข้อความ (horizontal 10px, vertical 6px)
 - `labelBgBorderRadius: 20`: มุมโค้งมนของพื้นหลัง
+
+**Interaction:**
+- `interactionWidth: 30`: ความกว้างของพื้นที่สำหรับ click/hover (30 pixels)
+  - เพิ่มพื้นที่รอบเส้นที่สามารถ click หรือ hover ได้
+  - ทำให้ง่ายต่อการ interact กับ edge โดยไม่ต้อง click ตรงเส้นพอดี
 
 #### 4.6 Render (JSX)
 
@@ -540,15 +556,571 @@ return (
 
 6. **Legend (คำอธิบาย)**:
    - แสดงรายการ connections ทั้งหมดพร้อมสี
-   - `absolute bottom-8 left-8`: วางที่มุมซ้ายล่าง
+   - `absolute bottom-4 left-1/2 -translate-x-1/2`: วางตรงกลางด้านล่าง
    - `bg-white/90`: พื้นหลังสีขาว ความทึบแสง 90%
-   - แสดงเส้นสีและข้อความอธิบาย
+   - แสดงเส้นสีและข้อความอธิบายแบบแนวนอน
 
 ---
 
-## การปรับแต่ง
+## คู่มือการเพิ่ม/ลด Nodes
 
-### 1. เปลี่ยนจำนวน Nodes
+ส่วนนี้จะอธิบายวิธีการเพิ่มหรือลด Generation และ Load nodes อย่างละเอียด
+
+### การเพิ่ม Generation Node
+
+**ขั้นตอนที่ 1: เพิ่มข้อมูลใน generations array**
+
+เปิดไฟล์ `src/components/ContractMapping.jsx` และหาส่วน `useEffect` (ประมาณบรรทัด 25-38):
+
+```javascript
+// Define generations
+const generations = [
+  { id: 'gen-1', label: 'Gen D1', value: '3,000 kW' },
+  { id: 'gen-2', label: 'Gen D2', value: '2,800 kW' },
+  { id: 'gen-3', label: 'Gen D3', value: '2,500 kW' },
+  // เพิ่ม generation ใหม่ที่นี่
+  { id: 'gen-4', label: 'Gen D4', value: '2,200 kW' },
+];
+```
+
+**คำอธิบาย Properties:**
+- `id`: ต้องไม่ซ้ำกับ id อื่นๆ (ใช้รูปแบบ 'gen-X' โดย X เป็นตัวเลข)
+- `label`: ชื่อที่จะแสดงบน node (สามารถตั้งชื่ออะไรก็ได้)
+- `value`: ค่าพลังงาน (แนะนำให้ใส่หน่วย kW)
+
+**ขั้นตอนที่ 2: (Optional) ปรับตำแหน่ง**
+
+ถ้าต้องการปรับระยะห่างระหว่าง nodes ให้เหมาะสม แก้ไขที่:
+
+```javascript
+// Create generation nodes
+const generationNodes = generations.map((gen, index) => ({
+  id: gen.id,
+  type: 'generation',
+  position: { x: 100, y: 150 + index * 180 }, // เปลี่ยน 180 เป็นค่าอื่นได้
+  data: { label: gen.label, value: gen.value },
+  draggable: false,
+}));
+```
+
+**ตัวอย่างการปรับระยะห่าง:**
+- ถ้ามี 4 nodes: ใช้ระยะห่าง 150-180 pixels
+- ถ้ามี 5+ nodes: ใช้ระยะห่าง 120-150 pixels
+- สูตร: `y = เริ่มต้น + (index × ระยะห่าง)`
+
+**ผลลัพธ์:**
+- จะมี generation node เพิ่มขึ้นด้านซ้ายของ diagram
+- Node จะจัดเรียงตามลำดับในarray
+
+### การลด Generation Node
+
+**วิธีที่ 1: ลบออกจาก array**
+
+```javascript
+const generations = [
+  { id: 'gen-1', label: 'Gen D1', value: '3,000 kW' },
+  { id: 'gen-2', label: 'Gen D2', value: '2,800 kW' },
+  // ลบ gen-3 ออก (ลบทั้งบรรทัด)
+];
+```
+
+**วิธีที่ 2: Comment ออก**
+
+```javascript
+const generations = [
+  { id: 'gen-1', label: 'Gen D1', value: '3,000 kW' },
+  { id: 'gen-2', label: 'Gen D2', value: '2,800 kW' },
+  // { id: 'gen-3', label: 'Gen D3', value: '2,500 kW' }, // comment ออกชั่วคราว
+];
+```
+
+**⚠️ สิ่งสำคัญ:**
+- ถ้าลบ generation node ต้องลบ edges ที่เชื่อมต่อกับ node นั้นด้วย
+- มิฉะนั้นจะ error เพราะหา source node ไม่เจอ
+
+### การเพิ่ม Load Node
+
+**ขั้นตอนที่ 1: เพิ่มข้อมูลใน loads array**
+
+```javascript
+// Define loads
+const loads = [
+  { id: 'load-1', label: 'Load D1', value: '4,200 kW (60% allocation)' },
+  { id: 'load-2', label: 'Load D2', value: '3,800 kW (40% allocation)' },
+  // เพิ่ม load ใหม่ที่นี่
+  { id: 'load-3', label: 'Load D3', value: '3,000 kW (30% allocation)' },
+];
+```
+
+**ขั้นตอนที่ 2: (Optional) ปรับตำแหน่ง**
+
+```javascript
+// Create load nodes
+const loadNodes = loads.map((load, index) => ({
+  id: load.id,
+  type: 'load',
+  position: { x: 900, y: 200 + index * 200 }, // เปลี่ยน 200 ได้ตามต้องการ
+  data: { label: load.label, value: load.value },
+  draggable: false,
+}));
+```
+
+**ตัวอย่างการวาง Load Nodes:**
+- `x: 900`: ตำแหน่งคงที่ทางขวา (ห่างจาก generation ประมาณ 800 pixels)
+- `y: 200 + index * 200`: เริ่มต้นที่ y=200, เว้นระยะ 200 pixels
+
+### การลด Load Node
+
+เหมือนกับการลด Generation Node:
+
+```javascript
+const loads = [
+  { id: 'load-1', label: 'Load D1', value: '4,200 kW (60% allocation)' },
+  // ลบ load-2 ออก
+];
+```
+
+**⚠️ อย่าลืม:**
+- ลบ edges ที่เชื่อมต่อกับ load node นั้นด้วย
+
+### ตัวอย่างแบบเต็ม: เพิ่ม 2 Generations และ 1 Load
+
+```javascript
+useEffect(() => {
+  // Define generations (เพิ่มเป็น 5 nodes)
+  const generations = [
+    { id: 'gen-1', label: 'Solar Farm A', value: '5,000 kW' },
+    { id: 'gen-2', label: 'Wind Farm B', value: '4,500 kW' },
+    { id: 'gen-3', label: 'Hydro Plant C', value: '4,000 kW' },
+    { id: 'gen-4', label: 'Battery Storage D', value: '3,500 kW' }, // ใหม่
+    { id: 'gen-5', label: 'Diesel Generator E', value: '3,000 kW' }, // ใหม่
+  ];
+
+  // Define loads (เพิ่มเป็น 3 nodes)
+  const loads = [
+    { id: 'load-1', label: 'Industrial Zone', value: '6,000 kW' },
+    { id: 'load-2', label: 'Commercial Area', value: '5,000 kW' },
+    { id: 'load-3', label: 'Residential Area', value: '4,000 kW' }, // ใหม่
+  ];
+
+  // Create generation nodes (ปรับระยะห่างเป็น 150)
+  const generationNodes = generations.map((gen, index) => ({
+    id: gen.id,
+    type: 'generation',
+    position: { x: 100, y: 150 + index * 150 }, // ลดระยะห่างเพราะมีหลาย nodes
+    data: { label: gen.label, value: gen.value },
+    draggable: false,
+  }));
+
+  // Create load nodes (ปรับระยะห่างเป็น 180)
+  const loadNodes = loads.map((load, index) => ({
+    id: load.id,
+    type: 'load',
+    position: { x: 900, y: 200 + index * 180 }, // ลดระยะห่าง
+    data: { label: load.label, value: load.value },
+    draggable: false,
+  }));
+
+  setNodes([...generationNodes, ...loadNodes]);
+
+  // ... edges (ต้องเพิ่ม connections ด้วย)
+}, [setNodes, setEdges]);
+```
+
+### Tips สำหรับการจัดการ Nodes
+
+**1. การตั้งชื่อ ID:**
+- ใช้รูปแบบที่สม่ำเสมอ: `gen-1`, `gen-2`, `load-1`, `load-2`
+- ไม่ควรเว้นช่องว่าง หรือใช้อักขระพิเศษ
+- ควรเป็นภาษาอังกฤษ
+
+**2. การคำนวณระยะห่าง:**
+```
+ถ้ามี N nodes และสูงหน้าจอ H pixels:
+ระยะห่างที่เหมาะสม = (H - 300) / N
+
+ตัวอย่าง:
+- หน้าจอ 1080px, มี 5 nodes: (1080 - 300) / 5 = 156 pixels
+- หน้าจอ 900px, มี 4 nodes: (900 - 300) / 4 = 150 pixels
+```
+
+**3. การปรับตำแหน่ง X (ระยะห่างซ้าย-ขวา):**
+```javascript
+// Generation nodes (ซ้าย)
+x: 100  // ปรับได้ 50-200
+
+// Load nodes (ขวา)
+x: 900  // ปรับได้ 700-1000
+
+// ระยะห่างมากขึ้น = เส้นยาวขึ้น = ดูมีพื้นที่มากขึ้น
+```
+
+**4. การปรับตำแหน่ง Y (ขึ้น-ลง):**
+```javascript
+// เริ่มต้น
+y: 150 // สำหรับ generation (ปรับได้ 100-250)
+y: 200 // สำหรับ load (ปรับได้ 100-250)
+
+// ระยะห่าง
+index * 180 // สำหรับ generation (ปรับได้ 120-250)
+index * 200 // สำหรับ load (ปรับได้ 150-300)
+```
+
+---
+
+## คู่มือการเพิ่ม/ลด Connections
+
+ส่วนนี้จะอธิบายวิธีการเพิ่มหรือลด edges (เส้นเชื่อมต่อ) ระหว่าง generations และ loads
+
+### โครงสร้างของ Edge
+
+Edge แต่ละเส้นประกอบด้วย properties หลักดังนี้:
+
+```javascript
+{
+  id: 'edge-1',              // unique identifier
+  source: 'gen-1',           // node ต้นทาง (generation id)
+  target: 'load-1',          // node ปลายทาง (load id)
+  type: 'default',           // ประเภทเส้น
+  animated: false,           // animation
+  style: {},                 // สไตล์เส้น
+  markerEnd: {},             // ลูกศร
+  label: '50%',              // ข้อความ
+  labelPosition: 0.5,        // ตำแหน่ง label
+  labelStyle: {},            // สไตล์ข้อความ
+  labelBgStyle: {},          // พื้นหลัง label
+  labelBgPadding: [10, 6],   // padding
+  labelBgBorderRadius: 20,   // มุมโค้ง
+  interactionWidth: 30,      // พื้นที่ click
+}
+```
+
+### การเพิ่ม Connection ใหม่
+
+**ขั้นตอนที่ 1: เพิ่ม edge ใน sampleEdges array**
+
+หาส่วน `const sampleEdges = [...]` ใน `useEffect` (ประมาณบรรทัด 60-206):
+
+```javascript
+const sampleEdges = [
+  // ... edges เดิม
+
+  // เพิ่ม edge ใหม่ที่นี่
+  {
+    id: 'edge-6',                        // เปลี่ยนเป็นหมายเลขถัดไป
+    source: 'gen-1',                     // generation ที่ต้องการเชื่อม
+    target: 'load-3',                    // load ที่ต้องการเชื่อม
+    type: 'default',
+    animated: false,
+    style: {
+      stroke: edgeColors[0],             // เลือกสี (0-4)
+      strokeWidth: 3
+    },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: edgeColors[0],              // สีเดียวกับเส้น
+      width: 20,
+      height: 20,
+    },
+    label: '30%',                        // เปอร์เซ็นต์
+    labelPosition: 0.5,                  // ตรงกลางเส้น
+    labelStyle: {
+      fill: edgeColors[0],               // สีเดียวกับเส้น
+      fontWeight: 700,
+      fontSize: 14,
+    },
+    labelBgStyle: {
+      fill: 'white',
+      fillOpacity: 1,
+      rx: 10,
+    },
+    labelBgPadding: [10, 6],
+    labelBgBorderRadius: 20,
+    interactionWidth: 30,
+  },
+];
+```
+
+**ขั้นตอนที่ 2: อัพเดท Legend**
+
+หา Legend component ที่ด้านล่าง (ประมาณบรรทัด 244-270) และเพิ่มข้อมูลการเชื่อมต่อใหม่:
+
+```javascript
+{/* Legend */}
+<div className="absolute bottom-4 left-1/2 -translate-x-1/2 ...">
+  <div className="flex items-center gap-6">
+    <h3 className="text-sm font-semibold text-gray-700">Connections:</h3>
+    <div className="flex items-center gap-4 text-xs flex-wrap">
+      {/* ... connections เดิม */}
+
+      {/* เพิ่มข้อมูลการเชื่อมต่อใหม่ */}
+      <div className="flex items-center gap-2">
+        <div className="w-6 h-0.5" style={{ backgroundColor: edgeColors[0] }}></div>
+        <span className="text-gray-600 whitespace-nowrap">Gen D1 → Load D3 (30%)</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### การลด Connection
+
+**วิธีที่ 1: ลบ edge object ออกจาก array**
+
+```javascript
+const sampleEdges = [
+  // ลบทั้ง object นี้ออก
+  // {
+  //   id: 'edge-5',
+  //   source: 'gen-3',
+  //   target: 'load-2',
+  //   ...
+  // },
+];
+```
+
+**วิธีที่ 2: Filter ออก (แบบ dynamic)**
+
+```javascript
+const sampleEdges = [
+  // ... all edges
+].filter(edge => edge.id !== 'edge-5'); // กรอง edge-5 ออก
+```
+
+**อย่าลืม:** ลบข้อมูลใน Legend ที่สอดคล้องด้วย
+
+### การเลือกสีสำหรับ Edge ใหม่
+
+มีสี 5 สีให้เลือกจาก `edgeColors` array:
+
+```javascript
+edgeColors[0]  // #3b82f6 (สีน้ำเงิน - Blue)
+edgeColors[1]  // #06b6d4 (สีฟ้า - Cyan)
+edgeColors[2]  // #10b981 (สีเขียว - Emerald)
+edgeColors[3]  // #f59e0b (สีส้ม - Amber)
+edgeColors[4]  // #ef4444 (สีแดง - Red)
+```
+
+**เลือกสีอย่างไร:**
+- ใช้สีที่ยังไม่ซ้ำกับ edges ที่มีอยู่
+- ถ้า edges เยอะ สามารถใช้สีซ้ำได้ แต่ควรแยกให้ไม่ใกล้กัน
+- สามารถเพิ่มสีใหม่ใน `edgeColors` array ได้
+
+### การปรับ labelPosition เพื่อไม่ให้ทับกัน
+
+เมื่อมีหลาย edges ที่ไป/มาจาก node เดียวกัน ควรปรับ `labelPosition`:
+
+```javascript
+// ตัวอย่าง: 3 edges ไป load เดียวกัน
+{
+  id: 'edge-1',
+  source: 'gen-1',
+  target: 'load-1',
+  labelPosition: 0.5,  // ตรงกลาง
+  ...
+},
+{
+  id: 'edge-2',
+  source: 'gen-2',
+  target: 'load-1',
+  labelPosition: 0.35, // เลื่อนไปทางซ้าย
+  ...
+},
+{
+  id: 'edge-3',
+  source: 'gen-3',
+  target: 'load-1',
+  labelPosition: 0.65, // เลื่อนไปทางขวา
+  ...
+},
+```
+
+**กฎการเลือก labelPosition:**
+1. edge ตรงกลาง: ใช้ 0.5
+2. edge อื่นๆ: กระจายเป็น 0.3, 0.4, 0.6, 0.7
+3. ห้ามใช้ 0 หรือ 1 (จะชนกับ node)
+4. แนะนำให้เว้นระยะอย่างน้อย 0.1-0.15
+
+### ตัวอย่างแบบเต็ม: เพิ่ม Connections แบบ Complex
+
+```javascript
+const sampleEdges = [
+  // Gen 1 → Load 1 (40%)
+  {
+    id: 'edge-1',
+    source: 'gen-1',
+    target: 'load-1',
+    type: 'default',
+    animated: false,
+    style: { stroke: edgeColors[0], strokeWidth: 3 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: edgeColors[0],
+      width: 20,
+      height: 20,
+    },
+    label: '40%',
+    labelPosition: 0.45,
+    labelStyle: {
+      fill: edgeColors[0],
+      fontWeight: 700,
+      fontSize: 14,
+    },
+    labelBgStyle: {
+      fill: 'white',
+      fillOpacity: 1,
+      rx: 10,
+    },
+    labelBgPadding: [10, 6],
+    labelBgBorderRadius: 20,
+    interactionWidth: 30,
+  },
+
+  // Gen 1 → Load 2 (60%)
+  {
+    id: 'edge-2',
+    source: 'gen-1',
+    target: 'load-2',
+    type: 'default',
+    animated: false,
+    style: { stroke: edgeColors[1], strokeWidth: 3 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: edgeColors[1],
+      width: 20,
+      height: 20,
+    },
+    label: '60%',
+    labelPosition: 0.55,
+    labelStyle: {
+      fill: edgeColors[1],
+      fontWeight: 700,
+      fontSize: 14,
+    },
+    labelBgStyle: {
+      fill: 'white',
+      fillOpacity: 1,
+      rx: 10,
+    },
+    labelBgPadding: [10, 6],
+    labelBgBorderRadius: 20,
+    interactionWidth: 30,
+  },
+
+  // Gen 2 → Load 1 (30%)
+  {
+    id: 'edge-3',
+    source: 'gen-2',
+    target: 'load-1',
+    type: 'default',
+    animated: false,
+    style: { stroke: edgeColors[2], strokeWidth: 3 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: edgeColors[2],
+      width: 20,
+      height: 20,
+    },
+    label: '30%',
+    labelPosition: 0.35,
+    labelStyle: {
+      fill: edgeColors[2],
+      fontWeight: 700,
+      fontSize: 14,
+    },
+    labelBgStyle: {
+      fill: 'white',
+      fillOpacity: 1,
+      rx: 10,
+    },
+    labelBgPadding: [10, 6],
+    labelBgBorderRadius: 20,
+    interactionWidth: 30,
+  },
+
+  // Gen 2 → Load 3 (70%)
+  {
+    id: 'edge-4',
+    source: 'gen-2',
+    target: 'load-3',
+    type: 'default',
+    animated: false,
+    style: { stroke: edgeColors[3], strokeWidth: 3 },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      color: edgeColors[3],
+      width: 20,
+      height: 20,
+    },
+    label: '70%',
+    labelPosition: 0.6,
+    labelStyle: {
+      fill: edgeColors[3],
+      fontWeight: 700,
+      fontSize: 14,
+    },
+    labelBgStyle: {
+      fill: 'white',
+      fillOpacity: 1,
+      rx: 10,
+    },
+    labelBgPadding: [10, 6],
+    labelBgBorderRadius: 20,
+    interactionWidth: 30,
+  },
+];
+```
+
+### Template สำหรับ Copy-Paste
+
+```javascript
+{
+  id: 'edge-X',                      // เปลี่ยน X
+  source: 'gen-Y',                   // เปลี่ยน Y
+  target: 'load-Z',                  // เปลี่ยน Z
+  type: 'default',
+  animated: false,
+  style: { stroke: edgeColors[N], strokeWidth: 3 }, // เปลี่ยน N (0-4)
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: edgeColors[N],            // เปลี่ยน N (เหมือนกับด้านบน)
+    width: 20,
+    height: 20,
+  },
+  label: 'XX%',                      // เปลี่ยน XX
+  labelPosition: 0.5,                // ปรับตำแหน่ง (0-1)
+  labelStyle: {
+    fill: edgeColors[N],             // เปลี่ยน N (เหมือนกับด้านบน)
+    fontWeight: 700,
+    fontSize: 14,
+  },
+  labelBgStyle: {
+    fill: 'white',
+    fillOpacity: 1,
+    rx: 10,
+  },
+  labelBgPadding: [10, 6],
+  labelBgBorderRadius: 20,
+  interactionWidth: 30,
+},
+```
+
+### Checklist สำหรับเพิ่ม Connection
+
+- [ ] ตั้ง id ที่ไม่ซ้ำ (edge-1, edge-2, ...)
+- [ ] ระบุ source (gen-X) และ target (load-Y) ที่ถูกต้อง
+- [ ] เลือกสีจาก edgeColors (0-4)
+- [ ] ตั้ง label เป็นเปอร์เซ็นต์หรือข้อความที่ต้องการ
+- [ ] ตั้ง labelPosition เพื่อไม่ให้ทับกับ edges อื่น
+- [ ] ใช้สีเดียวกันใน style.stroke, markerEnd.color, และ labelStyle.fill
+- [ ] อัพเดท Legend component ด้านล่าง
+- [ ] ทดสอบโดยรัน `npm run dev`
+
+---
+
+## การปรับแต่งขั้นสูง
+
+### 1. เปลี่ยนจำนวน Nodes (ดูคู่มือด้านบนสำหรับรายละเอียด)
 
 แก้ไขใน `ContractMapping.jsx` ใน `useEffect`:
 
