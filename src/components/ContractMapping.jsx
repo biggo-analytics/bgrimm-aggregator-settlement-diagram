@@ -231,28 +231,30 @@ const ContractMapping = () => {
       </div>
 
       {/* Legend */}
-      <div className="absolute bottom-8 left-8 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 p-4">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Connections</h3>
-        <div className="space-y-2 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[0] }}></div>
-            <span className="text-gray-600">Gen D1 → Load D1 (50%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[1] }}></div>
-            <span className="text-gray-600">Gen D2 → Load D1 (30%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[2] }}></div>
-            <span className="text-gray-600">Gen D3 → Load D1 (20%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[3] }}></div>
-            <span className="text-gray-600">Gen D2 → Load D2 (60%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5" style={{ backgroundColor: edgeColors[4] }}></div>
-            <span className="text-gray-600">Gen D3 → Load D2 (40%)</span>
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 px-6 py-3">
+        <div className="flex items-center gap-6">
+          <h3 className="text-sm font-semibold text-gray-700">Connections:</h3>
+          <div className="flex items-center gap-4 text-xs flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-0.5" style={{ backgroundColor: edgeColors[0] }}></div>
+              <span className="text-gray-600 whitespace-nowrap">Gen D1 → Load D1 (50%)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-0.5" style={{ backgroundColor: edgeColors[1] }}></div>
+              <span className="text-gray-600 whitespace-nowrap">Gen D2 → Load D1 (30%)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-0.5" style={{ backgroundColor: edgeColors[2] }}></div>
+              <span className="text-gray-600 whitespace-nowrap">Gen D3 → Load D1 (20%)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-0.5" style={{ backgroundColor: edgeColors[3] }}></div>
+              <span className="text-gray-600 whitespace-nowrap">Gen D2 → Load D2 (60%)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-0.5" style={{ backgroundColor: edgeColors[4] }}></div>
+              <span className="text-gray-600 whitespace-nowrap">Gen D3 → Load D2 (40%)</span>
+            </div>
           </div>
         </div>
       </div>
